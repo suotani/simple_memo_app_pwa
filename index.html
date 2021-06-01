@@ -14,13 +14,13 @@
   <h1 class="main-title">Simple Memo</h1>
   <div id="app" class="index">
     <ul class="list-group">
-      <li v-for="todo in todos" class="todos list-group-item">
-        <p class="trash"><i class="fas fa-trash-alt"></i></p>
-        <p class="title">
-          <a :href="'show.html?id='+todo.id">
-            {{todo.title}}
-          </a>
+      <li v-for="todo in active_todos" v-bind:key="todo.id" class="todos list-group-item">
+        <p class="trash" v-on:click="delete_item(todo.id)">
+          <i class="fas fa-trash-alt"></i>
         </p>
+        <a :href="'show.html?id='+todo.id" class="title">
+          <p><s>{{todo.title}}</s></p>
+        </a>
         <p class="edit">
           <a :href="'edit.html?id='+todo.id">
             <i class="fas fa-pencil-alt"></i>
@@ -30,13 +30,11 @@
     </ul>
 
     <ul class="list-group">
-      <li v-for="todo in finish_todos" class="todos list-group-item">
+      <li v-for="todo in finish_todos" v-bind:key="todo.id" class="todos list-group-item">
         <p class="trash"><i class="fas fa-trash-alt"></i></p>
-        <p class="title">
-          <a :href="'show.html/?id='+todo.id">
-            <s>{{todo.title}}</s>
-          </a>
-        </p>
+        <a :href="'show.html?id='+todo.id" class="title">
+          <p><s>{{todo.title}}</s></p>
+        </a>
         <p class="edit"></p>
       </li>
     </ul>
@@ -51,18 +49,25 @@
       el:"#app",
       data:{
           todos: [],
-          finish_todos: []
       },
       methods:{
-
+        delete_item: function(id){
+          this.todos = this.todos.filter(v => v.id != this.id)
+          localStorage.setItem("todos", JSON.stringify(this.todos))
+        }
       },
-      created: function() {
-        const todos = JSON.parse(localStorage.getItem("todos"))
-        this.todos = todos.filter(i => !i.finished).reverse()
-        this.finish_todos = todos.filter(i => i.finished).reverse()
+      mounted: function() {
+        this.todos = JSON.parse(localStorage.getItem("todos")).sort(function(a, b){
+          return a.created_at - b.created_at
+        })
       },
       computed: {
-        
+        active_todos: function(){
+          return this.todos.filter(i => !i.finished).reverse()
+        },
+        finish_todos: function(){
+          return this.todos.filter(i => i.finished).reverse()
+        }
       }
     })
   </script>

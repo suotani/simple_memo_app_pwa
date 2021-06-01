@@ -14,13 +14,21 @@
   <div id="app" class="new">
     <ul class="list-group">
       <li v-for="item in todo.items" class="todos list-group-item">
-        <p class="title">{{item}}</p>
+        <p class="title" v-on:click="finish(item)">
+          <i class="fas fa-check" v-if="todo.finish_list.includes(item)"></i>
+          <i class="far fa-square"v-if="!todo.finish_list.includes(item)"></i>
+          {{item}}
+        </p>
       </li>
     </ul>
     <div class="buttons">
       <a href="index.html" class="btn btn-secondary submitBtn">
         戻る
       </a>
+      <button class="btn btn-info submitBtn" v-on:click="all_ok">
+        <span v-if="!todo.finished">完了</span>
+        <span v-if="todo.finished">未完了に戻す</span>
+      </button>
     </div>
   </div>
 
@@ -38,17 +46,37 @@
     let app = new Vue({
       el:"#app",
       data:{
-          todo: {}
+          todo: {},
+          id: "",
+          todos: []
       },
       methods:{
-        submit: function(){
+        finish: function(item){
+          if (this.todo.finish_list.includes(item)){
+            this.todo.finish_list = this.todo.finish_list.filter(v => {
+              v == item
+            })
+          }else{
+            this.todo.finish_list.push(item)
+          }
 
+          this.todos = this.todos.filter(v => v.id != this.id)
+          this.todos.push(this.todo)
+          localStorage.setItem("todos", JSON.stringify(this.todos))
+        },
+        all_ok: function(){
+          this.todo.finished = !this.todo.finished
+
+          this.todos = this.todos.filter(v => v.id != this.id)
+          this.todos.push(this.todo)
+          localStorage.setItem("todos", JSON.stringify(this.todos))
         }
       },
       created: function() {
-        const todos = JSON.parse(localStorage.getItem("todos"))
-        const id = window.location.search.split("=")[1];
-        this.todo = todos.find(v => v.id == id)
+        this.todos = JSON.parse(localStorage.getItem("todos")) ?? []
+        this.id = window.location.search.split("=")[1];
+        this.todo = this.todos.find(v => v.id == this.id)
+        
       }
     })
   </script>

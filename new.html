@@ -34,7 +34,7 @@
         submit: function(){
           let items = this.todo.split("\n")
           let todos = JSON.parse(localStorage.getItem("todos")) ?? []
-          todos.push({id: Math.random().toString(32).substring(2),title: items[0], items: items, finished: [], finished: false})
+          todos.push({id: Math.random().toString(32).substring(2),title: items[0], items: items, finish_list: [], finished: false, created_at: Date.now()})
           localStorage.setItem("todos", JSON.stringify(todos))
           this.todo = ""
           window.location.href = "index.html"
