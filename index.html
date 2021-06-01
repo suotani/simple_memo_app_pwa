@@ -5,19 +5,66 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PWA Sample</title>
   <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" href="./bootstrap.min.css">
   <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css" integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous">
+  <script src="./vue.js"></script>
 </head>
 <body>
-  <h1 class="main-title">PWA</h1>
+  <h1 class="main-title">Simple Memo</h1>
+  <div id="app" class="index">
+    <ul class="list-group">
+      <li v-for="todo in todos" class="todos list-group-item">
+        <p class="trash"><i class="fas fa-trash-alt"></i></p>
+        <p class="title">
+          <a :href="'show.html?id='+todo.id">
+            {{todo.title}}
+          </a>
+        </p>
+        <p class="edit">
+          <a :href="'edit.html?id='+todo.id">
+            <i class="fas fa-pencil-alt"></i>
+          </a>
+        </p>
+      </li>
+    </ul>
+
+    <ul class="list-group">
+      <li v-for="todo in finish_todos" class="todos list-group-item">
+        <p class="trash"><i class="fas fa-trash-alt"></i></p>
+        <p class="title">
+          <a :href="'show.html/?id='+todo.id">
+            <s>{{todo.title}}</s>
+          </a>
+        </p>
+        <p class="edit"></p>
+      </li>
+    </ul>
+  </div>
+  <div class="footer">
+    <a href="new.html" class="newBtn btn btn-primary">+</a>
+  </div>
 
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./ServiceWorker.js').then(registration => {
-        console.log('ServiceWorker registration successful.');
-      }).catch(err => {
-        console.log('ServiceWorker registration failed.');
-      });
-    }
+
+    let app = new Vue({
+      el:"#app",
+      data:{
+          todos: [],
+          finish_todos: []
+      },
+      methods:{
+
+      },
+      created: function() {
+        const todos = JSON.parse(localStorage.getItem("todos"))
+        this.todos = todos.filter(i => !i.finished).reverse()
+        this.finish_todos = todos.filter(i => i.finished).reverse()
+      },
+      computed: {
+        
+      }
+    })
   </script>
 </body>
 </html>

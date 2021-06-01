@@ -7,6 +7,7 @@ const urlsToCache = [
   './show.html',
   './edit.html',
   './style.css',
+  './vue.js'
 ];
 
 self.addEventListener('install', (event) => {
@@ -28,3 +29,13 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./ServiceWorker.js').then(registration => {
+      console.log('ServiceWorker registration successful.');
+    }).catch(err => {
+      console.log('ServiceWorker registration failed.');
+    });
+  });
+}
