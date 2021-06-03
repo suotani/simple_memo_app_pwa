@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css" integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous">
   <script src="./vue.js"></script>
+  <script src="./sw_register.js"></script>
 </head>
 <body>
   <div id="app" class="new">
@@ -32,53 +33,39 @@
     </div>
   </div>
 
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        navigator.serviceWorker.register('./ServiceWorker.js').then(registration => {
-          console.log('ServiceWorker registration successful.');
-        }).catch(err => {
-          console.log('ServiceWorker registration failed.');
-        });
-      });
-    }
-
-    let app = new Vue({
-      el:"#app",
-      data:{
-          todo: {},
-          id: "",
-          todos: []
-      },
-      methods:{
-        finish: function(item){
-          if (this.todo.finish_list.includes(item)){
-            this.todo.finish_list = this.todo.finish_list.filter(v => {
-              v == item
-            })
-          }else{
-            this.todo.finish_list.push(item)
-          }
-
-          this.todos = this.todos.filter(v => v.id != this.id)
-          this.todos.push(this.todo)
-          localStorage.setItem("todos", JSON.stringify(this.todos))
-        },
-        all_ok: function(){
-          this.todo.finished = !this.todo.finished
-
-          this.todos = this.todos.filter(v => v.id != this.id)
-          this.todos.push(this.todo)
-          localStorage.setItem("todos", JSON.stringify(this.todos))
-        }
-      },
-      created: function() {
-        this.todos = JSON.parse(localStorage.getItem("todos")) ?? []
-        this.id = window.location.search.split("=")[1];
-        this.todo = this.todos.find(v => v.id == this.id)
-        
+<script>
+let app = new Vue({
+  el:"#app",
+  data:{
+      todo: {},
+      id: "",
+      todos: []
+  },
+  methods:{
+    finish: function(item){
+      if (this.todo.finish_list.includes(item)){
+        this.todo.finish_list = this.todo.finish_list.filter(v => v != item)
+      }else{
+        this.todo.finish_list.push(item)
       }
-    })
-  </script>
+      this.todos = this.todos.filter(v => v.id != this.id)
+      this.todos.push(this.todo)
+      localStorage.setItem("todos", JSON.stringify(this.todos))
+    },
+    all_ok: function(){
+      this.todo.finished = !this.todo.finished
+      this.todos = this.todos.filter(v => v.id != this.id)
+      this.todos.push(this.todo)
+      localStorage.setItem("todos", JSON.stringify(this.todos))
+    }
+  },
+  created: function() {
+    this.todos = JSON.parse(localStorage.getItem("todos")) ?? []
+    this.id = sessionStorage.getItem("id")
+    this.todo = this.todos.find(v => v.id == this.id)
+    
+  }
+})
+</script>
 </body>
 </html>

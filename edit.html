@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css" integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous">
   <script src="./vue.js"></script>
+  <script src="./sw_register.js"></script>
 </head>
 <body>
   <div id="app" class="new">
@@ -47,7 +48,7 @@
         }
       },
       mounted: function() {
-        this.id = window.location.search.split("=")[1];
+        this.id = sessionStorage.getItem("id")
         this.todo = JSON.parse(localStorage.getItem("todos")).find(v => v.id == this.id)
         this.todo_text = this.todo.items.join("\n")
       }

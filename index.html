@@ -9,20 +9,22 @@
   <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css" integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous">
   <script src="./vue.js"></script>
+  <script src="./sw_register.js"></script>
 </head>
 <body>
   <h1 class="main-title">Simple Memo</h1>
   <div id="app" class="index">
+    <button v-on:click="update_app">update</button>
     <ul class="list-group">
       <li v-for="todo in active_todos" v-bind:key="todo.id" class="todos list-group-item">
         <p class="trash" v-on:click="delete_item(todo.id)">
           <i class="fas fa-trash-alt"></i>
         </p>
-        <a :href="'show.html?id='+todo.id" class="title">
-          <p><s>{{todo.title}}</s></p>
+        <a v-on:click="link_to('show.html', todo.id)" class="title">
+          <p>>>qq{{todo.title}}</p>
         </a>
         <p class="edit">
-          <a :href="'edit.html?id='+todo.id">
+          <a v-on:click="link_to('edit.html', todo.id)">
             <i class="fas fa-pencil-alt"></i>
           </a>
         </p>
@@ -31,8 +33,10 @@
 
     <ul class="list-group">
       <li v-for="todo in finish_todos" v-bind:key="todo.id" class="todos list-group-item">
-        <p class="trash"><i class="fas fa-trash-alt"></i></p>
-        <a :href="'show.html?id='+todo.id" class="title">
+        <p class="trash" v-on:click="delete_item(todo.id)">
+          <i class="fas fa-trash-alt"></i>
+        </p>
+        <a v-on:click="link_to('show.html', todo.id)" class="title">
           <p><s>{{todo.title}}</s></p>
         </a>
         <p class="edit"></p>
@@ -44,7 +48,6 @@
   </div>
 
   <script>
-
     let app = new Vue({
       el:"#app",
       data:{
@@ -52,8 +55,17 @@
       },
       methods:{
         delete_item: function(id){
-          this.todos = this.todos.filter(v => v.id != this.id)
+          this.todos = this.todos.filter(v => v.id != id )
           localStorage.setItem("todos", JSON.stringify(this.todos))
+        },
+
+        link_to: function(path, id){
+          sessionStorage.setItem("id", id)
+          window.location.href = path
+        },
+        update_app: function(){
+          const channel = new MessageChannel();
+          navigator.serviceWorker.controller.postMessage('update', [channel.port2]);
         }
       },
       mounted: function() {
