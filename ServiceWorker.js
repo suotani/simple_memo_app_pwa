@@ -1,4 +1,3 @@
-const CACHE_NAME = 'simple_memo_app_pwa-v2';
 const version = '0.0.1';
 // Cache targets
 const urlsToCache = [
