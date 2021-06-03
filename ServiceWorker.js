@@ -1,5 +1,5 @@
 const CACHE_NAME = 'simple_memo_app_pwa-v2';
-const version = 'v8';
+const version = '0.0.1';
 // Cache targets
 const urlsToCache = [
   './',
@@ -21,27 +21,6 @@ self.addEventListener('install', (event) => {
       })
   );
 });
-
-self.addEventListener('update', (event) => {
-  event.waitUntil(
-    caches
-      .open(version)
-      .then((cache) => {
-        return cache.addAll(urlsToCache);
-      })
-  );
-});
-
-self.addEventListener('message', function(event) {
-  event.waitUntil(
-    caches
-      .open(version)
-      .then((cache) => {
-        return cache.addAll(urlsToCache);
-      })
-  );
-});
-
 
 self.addEventListener("activate", function (event) {
   event.waitUntil(

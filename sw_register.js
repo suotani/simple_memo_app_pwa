@@ -3,7 +3,7 @@ if ('serviceWorker' in navigator) {
     console.log('ServiceWorker registration successful.');
     registration.onupdatefound = function() {
       console.log('ServiceWorker update.');
-      registration.unregister();
+      registration.update();
     }
   }).catch(err => {
     console.log('ServiceWorker registration failed.');

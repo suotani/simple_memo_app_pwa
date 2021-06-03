@@ -14,7 +14,6 @@
 <body>
   <h1 class="main-title">Simple Memo</h1>
   <div id="app" class="index">
-    <button v-on:click="update_app">update</button>
     <ul class="list-group">
       <li v-for="todo in active_todos" v-bind:key="todo.id" class="todos list-group-item">
         <p class="trash" v-on:click="delete_item(todo.id)">
@@ -63,10 +62,6 @@
           sessionStorage.setItem("id", id)
           window.location.href = path
         },
-        update_app: function(){
-          const channel = new MessageChannel();
-          navigator.serviceWorker.controller.postMessage('update', [channel.port2]);
-        }
       },
       mounted: function() {
         this.todos = JSON.parse(localStorage.getItem("todos")).sort(function(a, b){
