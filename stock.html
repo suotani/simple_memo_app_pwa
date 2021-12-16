@@ -46,8 +46,8 @@
             <i class="fas fa-eye" v-bind:class="{watch: item.isWatch}" @click="toWatch('houses', item.id)"></i>
             {{item.name}}[{{item.amount}}]
           </span>
-          <span class="col-2"><button class="btn btn-info">-</button></span>
-          <span class="col-2"><button class="btn btn-success">+</button></span>
+          <span class="col-2"><button class="btn btn-info" v-on:click="countDown('houses', item.id)">-</button></span>
+          <span class="col-2"><button class="btn btn-success" v-on:click="countUp('houses', item.id)">+</button></span>
         </p>
         <hr>
         <h4>新しく追加する</h4>
