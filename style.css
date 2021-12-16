@@ -4,6 +4,9 @@ body{
 p{
   margin: 0px;
 }
+span{
+  padding: 0px;
+}
 
 .index{
   margin-bottom: 60px;
@@ -77,4 +80,84 @@ textarea{
 
 .buttons{
   display: flex;
+}
+
+.tabs {
+  display: flex;
+}
+
+.tabs p {
+  width: 50%;
+  box-sizing: border-box;
+  text-align: center;
+  height: 39px;
+  line-height: 39px;
+  border-radius: 10px 10px 0px 0px;
+  color: white;
+    font-weight: 600;
+    font-size: 20px;
+}
+.tabs p.active {
+  display: block;
+}
+
+.list .foods, .list .houses{
+  display: none;
+}
+
+.list .foods.active, .list .houses.active{
+  display: block;
+}
+.tabs .foods {
+  background-color: rgb(167, 152, 132);
+  color: #919191;
+}
+.tabs .foods.active{
+  background-color: rgb(245, 223, 195);
+}
+
+.tabs .houses{
+  background-color: rgb(88, 100, 117);
+  color: #919191;
+}
+
+.tabs .houses.active{
+  background-color: rgb(177, 204, 245);
+
+}
+
+.stock .item-card{
+  height: 50px;
+  justify-content: center;
+  padding: 3px 10px;
+  flex-direction: row;
+}
+
+.stock .item-card span{
+  align-items: center;
+    display: flex;
+}
+
+.stock .item-card .col-2, .stock .item-card .col-8{
+  padding: 0px;
+}
+
+.stock .item-card .btn{
+  font-size: 25px;
+  padding: 0px 14px;
+}
+
+.stock form{
+  width: 100%;
+  margin: auto;
+}
+
+.fa-eye {
+  color: #d4d4d4;
+  font-size: 22px;
+  margin-right: 8px;
+}
+
+.fa-eye.watch {
+  color: #e6bc0c;
 }

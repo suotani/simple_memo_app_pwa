@@ -1,4 +1,4 @@
-const version = '0.0.1';
+const version = '1.0.0';
 // Cache targets
 const urlsToCache = [
   './',
@@ -6,6 +6,7 @@ const urlsToCache = [
   './new.html',
   './show.html',
   './edit.html',
+  './stock.html',
   './style.css',
   './vue.js',
   './sw_register.js'
@@ -22,6 +23,7 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener("activate", function (event) {
+  console.log("activating")
   event.waitUntil(
     (function () {
       caches.keys().then(function (oldCacheKeys) {
@@ -30,6 +32,7 @@ self.addEventListener("activate", function (event) {
             return key !== version;
           })
           .map(function (key) {
+            console.log(key)
             return caches.delete(key);
           });
       });
@@ -41,19 +44,19 @@ self.addEventListener("activate", function (event) {
 self.addEventListener('fetch', function(event) {
   console.log('fetch', event.request.url);
 
-  event.respondWith(
-    // リクエストに一致するデータがキャッシュにあるかどうか
-    caches.match(event.request).then(function(cacheResponse) {
-      // キャッシュがあればそれを返す、なければリクエストを投げる
-      return cacheResponse || fetch(event.request).then(function(response) {
-        return caches.open(version).then(function(cache) {
-          // レスポンスをクローンしてキャッシュに入れる
-          cache.put(event.request, response.clone());
-          // オリジナルのレスポンスはそのまま返す
-          return response;
-        });  
-      });
-    })
-  );
+  // event.respondWith(
+  //   // リクエストに一致するデータがキャッシュにあるかどうか
+  //   caches.match(event.request).then(function(cacheResponse) {
+  //     // キャッシュがあればそれを返す、なければリクエストを投げる
+  //     return cacheResponse || fetch(event.request).then(function(response) {
+  //       return caches.open(version).then(function(cache) {
+  //         // レスポンスをクローンしてキャッシュに入れる
+  //         cache.put(event.request, response.clone());
+  //         // オリジナルのレスポンスはそのまま返す
+  //         return response;
+  //       });  
+  //     });
+  //   })
+  // );
 });
 

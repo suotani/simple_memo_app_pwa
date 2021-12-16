@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PWA Sample</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" href="./bootstrap.min.css">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css" integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous">
+  <script src="./vue.js"></script>
+  <script src="./sw_register.js"></script>
+</head>
+<body>
+  <h1 class="main-title">Simple 在庫管理</h1>
+  <a href="index.html">買い物メモへ</a>
+  <div id="app" class="index stock">
+    <div class="tabs">
+      <p class="foods" v-bind:class="{active: active}" @click="toggleTab(true)">食料品</p>
+      <p class="houses" v-bind:class="{active: !active}" @click="toggleTab(false)">日用品</p>
+    </div>
+    <div class="list">
+      <div class="foods" v-bind:class="{active: active}">
+        <!--食料品-->
+        <p v-for="item in foods" v-bind:key="item.id" class="card item-card">
+          <span class="col-8">
+            <i class="fas fa-eye" v-bind:class="{watch: item.isWatch}" @click="toWatch('foods', item.id)"></i>
+            {{item.name}}[{{item.amount}}]
+          </span>
+          <span class="col-2"><button class="btn btn-info" v-on:click="countDown('foods', item.id)">-</button></span>
+          <span class="col-2"><button class="btn btn-success" v-on:click="countUp('foods', item.id)">+</button></span>
+        </p>
+        <hr>
+        <h4>新しく追加する</h4>
+        <form class="">
+          <div class="row">
+            <input type="text" class="form-control col-8" v-model="newItem" placeholder="新しい品物を入力">
+            <button type="button" class="btn btn-primary col-4" @click="addItem('foods')">追加</button>
+          </div>
+        </form>
+      </div>
+      <div class="houses" v-bind:class="{active: !active}">
+        <!--日用品-->
+        <p v-for="item in houses" v-bind:key="item.id" class="card item-card">
+          <span class="col-8">
+            <i class="fas fa-eye" v-bind:class="{watch: item.isWatch}" @click="toWatch('houses', item.id)"></i>
+            {{item.name}}[{{item.amount}}]
+          </span>
+          <span class="col-2"><button class="btn btn-info">-</button></span>
+          <span class="col-2"><button class="btn btn-success">+</button></span>
+        </p>
+        <hr>
+        <h4>新しく追加する</h4>
+        <form class="">
+          <div class="row">
+            <input type="text" class="form-control col-8" v-model="newItem">
+            <button type="button" class="btn btn-primary col-4" @click="addItem('houses')">追加</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <hr>
+    <div class="card mt-2" style="width: 100%; margin: auto">
+      <div class="card-body">
+        <h5 class="card-title">ワンタップメモ作成</h5>
+        <p class="card-text">
+          ウォッチマーク<i class="fas fa-eye"></i>が黄色(<i class="fas fa-eye watch"></i>)
+          になっているもので、在庫が0のものを買い物メモとして作成します。
+          ウォッチマークをタップでメモに追加するかどうかを切り替えることができます。
+        </p>
+        <button type="button" class="btn btn-primary" @click="createMemo">メモを作成</button>
+      </div>
+    </div>
+  </div>
+</body>
+
+<script>
+  const init_data = {
+    foods: [
+      "バナナ","リンゴ","トマト","キャベツ","ほうれん草",
+      "ダイコン","人参","じゃがいも","牛肉","豚肉","鶏肉",
+      "小麦粉", "片栗粉", "醤油", "みりん", "酒","オリーブオイル",
+      "ごま油", "サラダ油"
+    ], 
+    houses: [
+      "歯磨き粉", "洗濯洗剤","柔軟剤", "歯ブラシ"
+    ] 
+  };
+  let app = new Vue({
+    el:"#app",
+
+    // stocks: {foods: [{id: 111, name: "バナナ", amount: 3, favorit: true}]}, houses: []},
+    data:{
+      newItem: "",
+      active: true,
+      stocks: {foods: [], houses: []}
+    },
+    methods:{
+      // お気に入り&在庫0の物をメモとして書き出し
+      createMemo: function() {
+        foods = this.stocks.foods.filter((v) => v.amount == 0 && v.isWatch).map((v) => v.name)
+        houses = this.stocks.houses.filter((v) => v.amount == 0 && v.isWatch).map((v) => v.name)
+        let todos = JSON.parse(localStorage.getItem("todos")) ?? []
+        todos.push({
+          id: Math.random().toString(32).substring(2),title: "在庫管理からの買い物メモ",
+          items: [...foods, ...houses], finish_list: [], finished: false, created_at: Date.now()
+        })
+        localStorage.setItem("todos", JSON.stringify(todos))
+        alert("メモを作成しました")
+      },
+
+      //お気に入り
+      toWatch: function(category, id){
+        this.stocks[category] = this.stocks[category].map((v) => {
+          if(v.id == id){
+            v.isWatch = !v.isWatch
+          }
+          return v
+        })
+        localStorage.setItem("stocks", JSON.stringify(this.stocks))
+      },
+
+      // カテゴリに追加
+      addItem: function(category) {
+        this.stocks[category].push({
+          id: Math.random().toString(32).substring(2),
+          name: this.newItem,
+          amount: 0
+        })
+        localStorage.setItem("stocks", JSON.stringify(this.stocks))
+        this.newItem = ""
+      },
+
+      toggleTab: function(bl){
+        this.active = bl;
+      },
+      //カウントアップ
+      countUp: function(category, id){
+        this.stocks[category] = this.stocks[category].map((v) => {
+          if(v.id == id){
+            v.amount += 1
+          }
+          return v
+        })
+        localStorage.setItem("stocks", JSON.stringify(this.stocks))
+      },
+      //カウントダウン
+      countDown: function(category, id){
+        this.stocks[category] = this.stocks[category].map((v) => {
+          if(v.id == id && v.amount > 0){
+            v.amount -= 1
+          }
+          return v
+        })
+        localStorage.setItem("stocks", JSON.stringify(this.stocks))
+      },
+      
+    },
+    mounted: function() {
+      json_stock = JSON.parse(localStorage.getItem("stocks"))
+      if(json_stock == null){
+        const foods = []
+        const houses = []
+        console.log(init_data.foods)
+        for(item of init_data.foods){
+          foods.push({id: Math.random().toString(32).substring(2), name: item, amount: 0, isWatch: false})
+        }
+        for(item of init_data.houses){
+          houses.push({id: Math.random().toString(32).substring(2), name: item, amount: 0, isWatch: false})
+        }
+        localStorage.setItem("stocks", JSON.stringify({foods, houses}))
+        this.stocks = JSON.parse(localStorage.getItem("stocks"))
+        //初期データ投入
+      }else{
+        this.stocks = json_stock
+      }
+    },
+    computed: {
+      foods: function() {
+        return this.stocks.foods
+      },
+      houses: function() {
+        return this.stocks.houses
+      }
+    }
+  })
+</script>
+</body>
+</html>
